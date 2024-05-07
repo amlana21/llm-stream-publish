@@ -1,0 +1,41 @@
+name: Deploy Infra for LLM streaming
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run_terraform_plan_apply:
+    name: Run Terraform Plan & Apply
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+    - name: Zip Lambda Functions
+      run: |
+        cd lambda_functions
+        for file in *; do
+          zip -r ../infrastructure/lambdas/$file.zip $file
+        done
+        ls ../infrastructure/lambdas
+    - name: Terraform Init
+      id: init
+      run: |
+        cd infrastructure
+        terraform init -input=false
+    - name: Terraform Plan
+      id: plan
+      run: |
+        cd infrastructure
+        terraform plan -no-color -input=false
+      continue-on-error: true
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+    - name: Terraform Apply
+      run: |
+        cd infrastructure
+        terraform apply --auto-approve -input=false

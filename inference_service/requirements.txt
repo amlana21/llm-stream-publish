@@ -1,0 +1,8 @@
+tensorflow
+tf-keras
+huggingface_hub
+transformers
+fastapi
+uvicorn
+gunicorn
+requests
