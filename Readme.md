@@ -1,3 +1,3 @@
-# How to stream LLM responses using AWS API Gateway Websockets and Lambda  
+# How to stream LLM responses using AWS API Gateway Websocket and Lambda  
 
 For more details: 
